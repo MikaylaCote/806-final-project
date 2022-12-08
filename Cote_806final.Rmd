@@ -1,0 +1,240 @@
+---
+title: "806 final project"
+author: "Mikayla Cote"
+date: "2022-12-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(broom)
+library(ggpp)
+library(ggpmisc)
+library(tibble)
+library(dplyr)
+library(quantreg)
+library(broom.mixed)
+library(ggplot2)
+library(ggpubr)
+library(tidyr)
+library(ggplot2)
+library(RColorBrewer)
+library("scales") 
+library(data.table)
+library(gridExtra)
+library(leaflet)
+```
+
+```{r}
+formula <- y ~ x 
+p1 <- ggplot(TEPambient, aes(x= grazing, y= chl)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("Chl a " (µg~L^-1)), tag = "a") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+              parse = TRUE,
+              label.x.npc = "right", label.y.npc = "top",
+              vstep = 0.05, size = 3.5)+
+  ylim(0,20) + theme(panel.background = element_rect(fill = "white"), 
+                     axis.line.x = element_line(colour = "black"),
+                     axis.line.y = element_line(colour = "black"),
+                     axis.text.x = element_text(colour = "black"),
+                     axis.text.y = element_text(colour = "black"))
+
+p2 <- ggplot(TEPambient, aes(x= grazing, y= TEP)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("TEP " (µg~XG~eq~L^-1)), tag = "b") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  ylim(0,500)+ 
+      theme(panel.background = element_rect(fill = "white"), 
+          axis.line.x = element_line(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"))
+
+p3 <- ggplot(TEPambient, aes(x= grazing, y= TEP/ chl)) +
+  geom_point(alpha = 0.3) + 
+  labs (x= expression("Grazing "(g,d^-1)), y = "TEP:Chl a", tag = "c") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  theme(panel.background = element_rect(fill = "white"), 
+          axis.line.x = element_line(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"))
+
+grid.arrange(p1, p2, p3) 
+```
+
+
+```{r}
+d1 <- ggplot(TEPambient, aes(x= netAccChl, y= chl)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("Chl a " (µg~L^-1)), tag = "a") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  ylim(0,20) + theme(panel.background = element_rect(fill = "white"), 
+                     axis.line.x = element_line(colour = "black"),
+                     axis.line.y = element_line(colour = "black"),
+                     axis.text.x = element_text(colour = "black"),
+                     axis.text.y = element_text(colour = "black"))
+
+d2 <- ggplot(TEPambient, aes(x= netAccChl, y= TEP)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("TEP " (µg~XG~eq~L^-1)), tag = "b") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  ylim(0,500)+ 
+  theme(panel.background = element_rect(fill = "white"), 
+        axis.line.x = element_line(colour = "black"),
+        axis.line.y = element_line(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"))
+
+d3 <- ggplot(TEPambient, aes(x= netAccChl, y= TEP/ chl)) +
+  geom_point(alpha = 0.3) + 
+  labs (x= expression("Net accumulation of chl "(r,d^-1)), y = "TEP:Chl a", tag = "c") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  theme(panel.background = element_rect(fill = "white"), 
+        axis.line.x = element_line(colour = "black"),
+        axis.line.y = element_line(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"))
+
+grid.arrange(d1, d2, d3) 
+```
+
+
+```{r}
+b1 <- ggplot(TEPambient, aes(x= growth, y= chl)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("Chl a " (µg~L^-1)), tag = "a") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  ylim(0,20) + theme(panel.background = element_rect(fill = "white"), 
+                     axis.line.x = element_line(colour = "black"),
+                     axis.line.y = element_line(colour = "black"),
+                     axis.text.x = element_text(colour = "black"),
+                     axis.text.y = element_text(colour = "black"))
+
+b2 <- ggplot(TEPambient, aes(x= growth, y= TEP)) +
+  geom_point(alpha = 0.3) +
+  labs (x= expression(), y= expression("TEP " (µg~XG~eq~L^-1)), tag = "b") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  ylim(0,500)+ 
+  theme(panel.background = element_rect(fill = "white"), 
+        axis.line.x = element_line(colour = "black"),
+        axis.line.y = element_line(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"))
+
+b3 <- ggplot(TEPambient, aes(x= growth, y= TEP/ chl)) +
+  geom_point(alpha = 0.3) + 
+  labs (x= expression("Growth "(µ,d^-1)), y = "TEP:Chl a", tag = "c") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..eq.label.., ..rr.label.., ..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = "top",
+               vstep = 0.05, size = 3.5)+
+  theme(panel.background = element_rect(fill = "white"), 
+        axis.line.x = element_line(colour = "black"),
+        axis.line.y = element_line(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"))
+
+grid.arrange(b1, b2, b3) 
+```
+
+```{r}
+c1 <- ggplot(TEPambient, aes(x= grazing, y= TEP/chl, color = region)) +
+  geom_point(alpha = 0.5) +
+  labs (x= expression("Grazing "(g,d^-1)), y= "TEP:Chl a", tag = "a") +
+  facet_wrap(~region, scales = "fixed") +
+  geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+  stat_poly_eq(aes(label = paste(..p.value.label.., sep = "*`,`~")), 
+               parse = TRUE,
+               label.x.npc = "right", label.y.npc = 275,
+               vstep = 0.05, size = 3.5)+
+  ylim(0,300)+ 
+    theme(panel.background = element_rect(fill = "white"), 
+          axis.line.x = element_line(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"),
+          strip.text.x = element_blank())+ 
+          scale_color_brewer(palette = "Set2")
+
+  c2 <- ggplot(TEPambient, aes(x= netAccChl, y= TEP/chl, color = region)) +
+    geom_point(alpha = 0.5) +
+    labs (x= expression("Net accumulation of chl "(r,d^-1)), y= "TEP:Chl a", tag = "b") +
+    facet_wrap(~region, scales = "fixed") +
+    geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+    stat_poly_eq(aes(label = paste( ..p.value.label.., sep = "*`,`~")), 
+                 parse = TRUE,
+                 label.x.npc = "right", label.y.npc = 275,
+                 vstep = 0.05, size = 3.5)+
+    ylim(0,300)+ 
+    theme(panel.background = element_rect(fill = "white"), 
+          axis.line.x = element_line(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"),
+          strip.text.x = element_blank())+ 
+    scale_color_brewer(palette = "Set2")
+  
+  
+  c3 <- ggplot(TEPambient, aes(x= growth, y= TEP/chl, color = region)) +
+    geom_point(alpha = 0.5) +
+    labs (x= expression("Growth "(µ,d^-1)), y= "TEP:Chl a", tag = "c") +
+    facet_wrap(~region, scales = "fixed") +
+    geom_smooth(method = "lm", formula = formula, se = F, color= "black") +
+    stat_poly_eq(aes(label = paste(..p.value.label..)), 
+                 parse = TRUE,
+                 label.x.npc = "right", label.y.npc = 275,
+                 vstep = 0.05, size = 3.5)+
+    ylim(0,300)+ 
+    theme(panel.background = element_rect(fill = "white"), 
+          axis.line.x = element_line(colour = "black"),
+          axis.line.y = element_line(colour = "black"),
+          axis.text.x = element_text(colour = "black"),
+          axis.text.y = element_text(colour = "black"),
+          strip.text.x = element_blank()) + 
+    scale_color_brewer(palette = "Set2")
+  
+  plot1 <-  c3 + 
+    labs(color = "Region") +
+    theme(legend.background = element_rect(fill = "grey95"))
+  plot2 <-  c2 + 
+    labs(color = "Region") +
+    theme(legend.background = element_rect(fill = "grey95"))
+  plot3 <-  c1 + 
+    labs(color = "Region") +
+    theme(legend.background = element_rect(fill = "grey95"))
+  
+ggarrange(plot3, plot2, plot1, ncol=1, nrow=3, common.legend = TRUE, legend="right")
+```
+
