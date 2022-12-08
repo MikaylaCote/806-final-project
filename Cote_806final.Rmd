@@ -25,7 +25,14 @@ library(gridExtra)
 library(leaflet)
 ```
 
-```{r}
+```{r, map}
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng=c(-81.01222222, 14.25, 5.46694444, -81.02213889, -117.7513889), lat=c(32.33277778, 40.8083, 60.36694444, 31.99047222, 32.86888889))
+```
+
+
+```{r, Figure 2}
 formula <- y ~ x 
 p1 <- ggplot(TEPambient, aes(x= grazing, y= chl)) +
   geom_point(alpha = 0.3) +
@@ -74,7 +81,7 @@ grid.arrange(p1, p2, p3)
 ```
 
 
-```{r}
+```{r, Figure 3}
 d1 <- ggplot(TEPambient, aes(x= netAccChl, y= chl)) +
   geom_point(alpha = 0.3) +
   labs (x= expression(), y= expression("Chl a " (µg~L^-1)), tag = "a") +
@@ -122,7 +129,7 @@ grid.arrange(d1, d2, d3)
 ```
 
 
-```{r}
+```{r, Figure 4}
 b1 <- ggplot(TEPambient, aes(x= growth, y= chl)) +
   geom_point(alpha = 0.3) +
   labs (x= expression(), y= expression("Chl a " (µg~L^-1)), tag = "a") +
@@ -169,7 +176,7 @@ b3 <- ggplot(TEPambient, aes(x= growth, y= TEP/ chl)) +
 grid.arrange(b1, b2, b3) 
 ```
 
-```{r}
+```{r, Figure 5}
 c1 <- ggplot(TEPambient, aes(x= grazing, y= TEP/chl, color = region)) +
   geom_point(alpha = 0.5) +
   labs (x= expression("Grazing "(g,d^-1)), y= "TEP:Chl a", tag = "a") +
